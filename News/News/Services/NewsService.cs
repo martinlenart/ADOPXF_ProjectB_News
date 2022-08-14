@@ -1,14 +1,10 @@
 ﻿//#define UseNewsApiSample  // Remove or undefine to use your own code to read live data
 
-using System;
-using System.Linq;
+using News.Models;
 using System.Net;
 using System.Net.Http;
-using System.Collections.Concurrent;
+using System.Net.Http.Json; //Requires nuget package System.Net.Http.Json
 using System.Threading.Tasks;
-
-using News.Models;
-using News.ModelsSampleData;
 
 namespace News.Services
 {
@@ -16,24 +12,38 @@ namespace News.Services
     {
 
         //Here is where you lift in your Service code from Part A
-/*
+
+        HttpClient httpClient;
+        readonly string apiKey = "d318329c40734776a014f9d9513e14ae";
+
+        public NewsService()
+        {
+            httpClient = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate });
+            httpClient.DefaultRequestHeaders.Add("user-agent", "News-API-csharp/0.1");
+            httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
+        }
+
+        /*
         public async Task<NewsGroup> GetNewsAsync(NewsCategory category)
         {
 
-#if UseNewsApiSample      
+#if UseNewsApiSample
             NewsApiData nd = await NewsApiSampleData.GetNewsApiSampleAsync(category);
 
 #else
-            //https://newsapi.org/docs/endpoints/top-headlines
-            var uri = $"https://newsapi.org/v2/top-headlines?country=se&category={category}&apiKey={apiKey}";
+            var uri = $"https://newsapi.org/v2/top-headlines?country=se&category={category}";
 
+            // make the http request
+            var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
+            var response = await httpClient.SendAsync(httpRequest);
+            response.EnsureSuccessStatusCode();
 
-            //Recommend to use Newtonsoft Json Deserializer as it works best with Android
-            var webclient = new WebClient();
-            var json = await webclient.DownloadStringTaskAsync(uri);
-            NewsApiData nd = Newtonsoft.Json.JsonConvert.DeserializeObject<NewsApiData>(json);
+            //Convert Json to Object
+            NewsApiData nd = await response.Content.ReadFromJsonAsync<NewsApiData>();
 
 #endif
-*/
+            //Here must be code to convert from NewsApiData to NewsGroup
+        }
+        */
     }
 }
